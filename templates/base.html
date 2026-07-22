@@ -140,23 +140,11 @@
                 <span class="material-symbols-outlined lock-icon">setup</span>
                 <h2>Set Up Lock Screen</h2>
             </div>
-            <p class="lock-subtitle">Verify your email to set a password</p>
-            <div id="setup-email-section">
-                <input type="text" class="lock-input" value="madhuryaraghavan@gmail.com" disabled>
-                <button onclick="sendOTP('setup')" class="btn btn-primary btn-block btn-send">Send OTP</button>
-            </div>
-            <div id="setup-otp-section" style="display:none;">
-                <input type="text" id="setup-otp" class="lock-input" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
-                <div class="lock-error" id="setup-otp-error"></div>
-                <button onclick="verifyOTP('setup')" class="btn btn-primary btn-block btn-verify">Verify</button>
-                <button id="setup-resend" onclick="resendOTP('setup')" class="btn btn-secondary btn-block" disabled>Resend in 30s</button>
-            </div>
-            <div id="setup-password-section" style="display:none;">
-                <input type="password" id="setup-password" class="lock-input" placeholder="Create password">
-                <input type="password" id="setup-confirm" class="lock-input" placeholder="Confirm password">
-                <div class="lock-error" id="setup-password-error"></div>
-                <button onclick="savePassword()" class="btn btn-primary btn-block">Set Password</button>
-            </div>
+            <p class="lock-subtitle">Create a password to secure your app</p>
+            <input type="password" id="setup-password" class="lock-input" placeholder="Create password">
+            <input type="password" id="setup-confirm" class="lock-input" placeholder="Confirm password">
+            <div class="lock-error" id="setup-password-error"></div>
+            <button onclick="savePassword()" class="btn btn-primary btn-block">Set Password</button>
         </div>
 
         <div class="lock-card" id="forgot-state" style="display:none;">
@@ -164,23 +152,11 @@
                 <span class="material-symbols-outlined lock-icon">lock_reset</span>
                 <h2>Reset Password</h2>
             </div>
-            <p class="lock-subtitle">Verify your email to reset password</p>
-            <div id="forgot-email-section">
-                <input type="text" class="lock-input" value="madhuryaraghavan@gmail.com" disabled>
-                <button onclick="sendOTP('forgot')" class="btn btn-primary btn-block btn-send">Send OTP</button>
-            </div>
-            <div id="forgot-otp-section" style="display:none;">
-                <input type="text" id="forgot-otp" class="lock-input" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
-                <div class="lock-error" id="forgot-otp-error"></div>
-                <button onclick="verifyOTP('forgot')" class="btn btn-primary btn-block btn-verify">Verify</button>
-                <button id="forgot-resend" onclick="resendOTP('forgot')" class="btn btn-secondary btn-block" disabled>Resend in 30s</button>
-            </div>
-            <div id="forgot-password-section" style="display:none;">
-                <input type="password" id="forgot-password" class="lock-input" placeholder="New password">
-                <input type="password" id="forgot-confirm" class="lock-input" placeholder="Confirm password">
-                <div class="lock-error" id="forgot-password-error"></div>
-                <button onclick="saveNewPassword()" class="btn btn-primary btn-block">Reset Password</button>
-            </div>
+            <p class="lock-subtitle">Create a new password</p>
+            <input type="password" id="forgot-password" class="lock-input" placeholder="New password">
+            <input type="password" id="forgot-confirm" class="lock-input" placeholder="Confirm password">
+            <div class="lock-error" id="forgot-password-error"></div>
+            <button onclick="saveNewPassword()" class="btn btn-primary btn-block">Reset Password</button>
             <a href="#" onclick="showLockState('lock-state')" class="lock-link" style="margin-top:12px;">Back to Login</a>
         </div>
     </div>

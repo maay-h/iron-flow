@@ -1087,6 +1087,19 @@ def set_password():
     return {"success": True}
 
 
+@app.route("/api/set-password-direct", methods=["POST"])
+def set_password_direct():
+    if get_setting("app_password_hash"):
+        return {"success": False, "error": "Password already set"}, 400
+    data = request.get_json()
+    password = data.get("password", "")
+    if len(password) < 4:
+        return {"success": False, "error": "Password too short"}, 400
+    set_setting("app_password_hash", generate_password_hash(password))
+    session["authenticated"] = True
+    return {"success": True}
+
+
 @app.route("/api/verify-login", methods=["POST"])
 def verify_login():
     data = request.get_json()
@@ -1100,14 +1113,12 @@ def verify_login():
 
 @app.route("/api/reset-password", methods=["POST"])
 def reset_password():
-    if not session.get("otp_verified"):
-        return {"success": False, "error": "OTP not verified"}, 401
     data = request.get_json()
     password = data.get("password", "")
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
     set_setting("app_password_hash", generate_password_hash(password))
-    session.pop("otp_verified", None)
+    session["authenticated"] = True
     return {"success": True}
 
 
