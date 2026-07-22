@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block page_title %}Enquiries{% endblock %}
+{% block content %}
+
+<form method="POST" action="{{ url_for('enquiry_add') }}" class="add-enquiry-form">
+    <h3>New Enquiry</h3>
+    <div class="form-row">
+        <input type="text" name="name" placeholder="Name" required class="form-input">
+        <input type="text" name="phone" placeholder="Phone" class="form-input">
+        <input type="text" name="plan" placeholder="Plan enquired" class="form-input">
+        <input type="date" name="follow_up_date" class="form-input">
+        <textarea name="note" placeholder="Note (optional)" class="form-input" rows="2"></textarea>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+</form>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Plan</th>
+                <th>Note</th>
+                <th>Follow-up</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in enquiries %}
+            <tr>
+                <td>{{ e.created_at[:10] }}</td>
+                <td>{{ e.name }}</td>
+                <td>{{ e.phone }}</td>
+                <td>{{ e.plan }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('enquiry_update_note', enquiry_id=e.id) }}" style="display:inline-flex;align-items:center;gap:4px;">
+                        <input type="text" name="note" value="{{ e.note or '' }}" class="form-input" style="width:120px;padding:4px 6px;font-size:0.75rem;" placeholder="Note">
+                        <button type="submit" class="btn btn-sm" title="Save note"><span class="material-symbols-outlined" style="font-size:16px;">check</span></button>
+                    </form>
+                </td>
+                <td>{{ e.follow_up_date or '-' }}</td>
+                <td>
+                    {% if e.status == 'done' %}
+                    <span class="status-badge status-active">Done</span>
+                    {% elif e.is_today %}
+                    <span class="status-badge" style="background:#d00;color:#fff;">Today</span>
+                    {% else %}
+                    <span class="status-badge status-expired">Pending</span>
+                    {% endif %}
+                </td>
+                <td class="actions-cell">
+                    {% if e.phone %}
+                    <a href="tel:{{ e.phone }}" class="btn btn-sm" title="Call"><span class="material-symbols-outlined">call</span></a>
+                    {% set np = e.phone | normalize_phone %}
+                    {% if np %}
+                    <a href="https://wa.me/{{ np }}?text={{ ('Hi ' + e.name + ', you recently enquired about ' + e.plan + '. Would you like to proceed?') | urlencode }}" target="_blank" class="btn btn-sm" title="WhatsApp"><span class="material-symbols-outlined">chat</span></a>
+                    {% endif %}
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('enquiry_update_date', enquiry_id=e.id) }}" style="display:inline-flex;align-items:center;gap:4px;">
+                        <input type="date" name="follow_up_date" value="{{ e.follow_up_date }}" class="form-input" style="width:120px;padding:4px 6px;font-size:0.75rem;">
+                        <button type="submit" class="btn btn-sm btn-primary">Set</button>
+                    </form>
+                    {% if e.status != 'done' %}
+                    <form method="POST" action="{{ url_for('enquiry_mark_done', enquiry_id=e.id) }}" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Mark this enquiry as done?')">Done</button>
+                    </form>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('enquiry_delete', enquiry_id=e.id) }}" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this enquiry?')">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" class="empty-state">No enquiries yet</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block page_title %}Edit {{ member.name }}{% endblock %}
+{% block content %}
+<form method="POST" class="form">
+    <div class="form-section">
+        <h3>Personal Details</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" name="name" id="name" required class="form-control" value="{{ member.name }}">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ member.email or '' }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="text" name="phone" id="phone" class="form-control" value="{{ member.phone or '' }}">
+            </div>
+            <div class="form-group">
+                <label for="bill_number">Bill Number</label>
+                <input type="text" name="bill_number" id="bill_number" class="form-control" value="{{ member.bill_number or '' }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-section">
+        <h3>Plan Details</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="joining_date">Joining Date</label>
+                <input type="date" name="joining_date" id="joining_date" class="form-control" value="{{ member.joining_date | dateinput }}">
+            </div>
+            <div class="form-group">
+                <label for="expiry_date">Expiry Date</label>
+                <input type="date" name="expiry_date" id="expiry_date" class="form-control" value="{{ member.expiry_date | dateinput }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="total_sessions">Total Sessions</label>
+                <input type="number" name="total_sessions" id="total_sessions" class="form-control" value="{{ member.total_sessions }}">
+            </div>
+            <div class="form-group">
+                <label for="sessions_used">Sessions Used</label>
+                <input type="number" name="sessions_used" id="sessions_used" class="form-control" value="{{ member.sessions_used }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="trainer">Trainer</label>
+                <input type="text" name="trainer" id="trainer" class="form-control" value="{{ member.trainer or '' }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-section">
+        <h3>Payment Details</h3>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="price">Price (Rs.)</label>
+                <input type="number" step="0.01" name="price" id="price" class="form-control" value="{{ member.price }}">
+            </div>
+            <div class="form-group">
+                <label for="payment_mode">Payment Mode</label>
+                <select name="payment_mode" id="payment_mode" class="form-control">
+                    <option value="Cash" {{ 'selected' if member.payment_mode == 'Cash' }}>Cash</option>
+                    <option value="Online" {{ 'selected' if member.payment_mode == 'Online' }}>Online</option>
+                    <option value="Card" {{ 'selected' if member.payment_mode == 'Card' }}>Card</option>
+                    <option value="Both" {{ 'selected' if member.payment_mode == 'Both' }}>Both</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="amount_paid">Amount Paid</label>
+                <input type="number" step="0.01" name="amount_paid" id="amount_paid" class="form-control" value="{{ member.amount_paid }}">
+            </div>
+            <div class="form-group">
+                <label for="paid_date">Paid Date</label>
+                <input type="date" name="paid_date" id="paid_date" class="form-control" value="{{ member.paid_date | dateinput }}">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group">
+                <label for="balance_amount">Balance Amount</label>
+                <input type="number" step="0.01" name="balance_amount" id="balance_amount" class="form-control" value="{{ member.balance_amount }}" readonly>
+            </div>
+            <div class="form-group" id="balance-due-group" style="{{ 'display:flex;' if member.balance_amount and member.balance_amount > 0 else 'display:none;' }}">
+                <label for="balance_due_date">Balance Due Date</label>
+                <input type="date" name="balance_due_date" id="balance_due_date" class="form-control" value="{{ member.balance_due_date | dateinput }}">
+            </div>
+        </div>
+        <div class="form-row" id="split-payment-row" style="display:none;">
+            <div class="form-group">
+                <label for="online_amount">Online Amount</label>
+                <input type="number" step="0.01" name="online_amount" id="online_amount" class="form-control" value="{{ member.online_amount }}">
+            </div>
+            <div class="form-group">
+                <label for="cash_amount">Cash Amount</label>
+                <input type="number" step="0.01" name="cash_amount" id="cash_amount" class="form-control" value="{{ member.cash_amount }}">
+            </div>
+        </div>
+    </div>
+    <div class="form-section">
+        <h3>Notes</h3>
+        <div class="form-group">
+            <textarea name="notes" id="notes" class="form-control" rows="3">{{ member.notes or '' }}</textarea>
+        </div>
+    </div>
+    <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Update Member</button>
+        <a href="{{ url_for('member_detail', member_id=member.id) }}" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+<script>
+function calcBalance() {
+    var price = parseFloat(document.getElementById('price').value) || 0;
+    var paid = parseFloat(document.getElementById('amount_paid').value) || 0;
+    var balance = Math.max(0, price - paid);
+    document.getElementById('balance_amount').value = balance.toFixed(2);
+    document.getElementById('balance-due-group').style.display = balance > 0 ? 'flex' : 'none';
+}
+document.getElementById('payment_mode')?.addEventListener('change', function() {
+    document.getElementById('split-payment-row').style.display = this.value === 'Both' ? 'flex' : 'none';
+});
+document.getElementById('price')?.addEventListener('input', calcBalance);
+document.getElementById('amount_paid')?.addEventListener('input', calcBalance);
+{% if member.payment_mode == 'Both' %}
+document.getElementById('split-payment-row').style.display = 'flex';
+{% endif %}
+</script>
+{% endblock %}

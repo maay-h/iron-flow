@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron&Flow{% if title %} - {{ title }}{% endif %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+{% if session.authenticated %}
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            {% if category %}
+            <div class="sidebar-header">
+                <a href="{{ url_for('index') }}" class="sidebar-back">
+                    <span class="material-symbols-outlined">arrow_back</span>
+                    <span>Plans</span>
+                </a>
+                <div class="sidebar-category-name">{{ category_labels.get(category, category) }}</div>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('category_dashboard', category=category) }}" class="nav-item{% if request.endpoint == 'category_dashboard' %} active{% endif %}">
+                    <span class="material-symbols-outlined">dashboard</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('members_list', category=category) }}" class="nav-item{% if request.endpoint == 'members_list' %} active{% endif %}">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>Members</span>
+                </a>
+                <a href="{{ url_for('add_member', category=category) }}" class="nav-item{% if request.endpoint == 'add_member' %} active{% endif %}">
+                    <span class="material-symbols-outlined">person_add</span>
+                    <span>Add Member</span>
+                </a>
+                <a href="{{ url_for('expiring_members', category=category) }}" class="nav-item{% if request.endpoint == 'expiring_members' %} active{% endif %}">
+                    <span class="material-symbols-outlined">hourglass_top</span>
+                    <span>Expiring</span>
+                </a>
+                <a href="{{ url_for('expired_members', category=category) }}" class="nav-item{% if request.endpoint == 'expired_members' %} active{% endif %}">
+                    <span class="material-symbols-outlined">timer_off</span>
+                    <span>Expired</span>
+                </a>
+                <a href="{{ url_for('pending_balances', category=category) }}" class="nav-item{% if request.endpoint == 'pending_balances' %} active{% endif %}">
+                    <span class="material-symbols-outlined">account_balance</span>
+                    <span>Balances</span>
+                </a>
+                <a href="{{ url_for('category_admin', category=category) }}" class="nav-item{% if request.endpoint == 'category_admin' %} active{% endif %}">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                    <span>Admin</span>
+                </a>
+            </nav>
+            {% else %}
+            <div class="sidebar-header">
+                <a href="{{ url_for('index') }}" class="sidebar-brand">
+                    <span class="material-symbols-outlined">fitness_center</span>
+                    <span>Iron&Flow</span>
+                </a>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="{{ url_for('index') }}" class="nav-item{% if request.endpoint == 'index' %} active{% endif %}">
+                    <span class="material-symbols-outlined">home</span>
+                    <span>Home</span>
+                </a>
+                <a href="{{ url_for('all_members') }}" class="nav-item{% if request.endpoint == 'all_members' %} active{% endif %}">
+                    <span class="material-symbols-outlined">group</span>
+                    <span>All Members</span>
+                </a>
+                <a href="{{ url_for('enquiries_list') }}" class="nav-item{% if request.endpoint == 'enquiries_list' or request.endpoint == 'enquiry_add' %} active{% endif %}">
+                    <span class="material-symbols-outlined">contact_page</span>
+                    <span>Enquiries</span>
+                </a>
+                <a href="{{ url_for('today_enquiries') }}" class="nav-item{% if request.endpoint == 'today_enquiries' %} active{% endif %}">
+                    <span class="material-symbols-outlined">today</span>
+                    <span>Today's Enquiries</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}" class="nav-item{% if request.endpoint == 'admin_panel' %} active{% endif %}">
+                    <span class="material-symbols-outlined">admin_panel_settings</span>
+                    <span>Admin</span>
+                </a>
+                <a href="#" onclick="logout()" class="nav-item">
+                    <span class="material-symbols-outlined">logout</span>
+                    <span>Logout</span>
+                </a>
+            </nav>
+            {% endif %}
+        </aside>
+        <main class="main-content">
+            <header class="top-bar">
+                <div class="top-bar-left">
+                    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                        <span class="material-symbols-outlined">menu</span>
+                    </button>
+                    <h1 class="page-title">{% block page_title %}{% endblock %}</h1>
+                </div>
+                <div class="top-bar-right">
+                    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Toggle theme">
+                        <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+                    </button>
+                </div>
+            </header>
+            <div class="content-area">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <span>{{ message }}</span>
+                        <button onclick="this.parentElement.remove()" class="flash-close">&times;</button>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>function logout(){fetch('/api/logout',{method:'POST'}).then(function(){window.location.reload()})}</script>
+    {% block scripts %}{% endblock %}
+{% else %}
+    <div class="lockscreen" id="lockscreen">
+        <div class="lock-card" id="lock-state">
+            <div class="lock-header">
+                <span class="material-symbols-outlined lock-icon">lock</span>
+                <h2>Iron&Flow</h2>
+            </div>
+            <p class="lock-subtitle">Enter password to unlock</p>
+            <input type="password" id="login-password" class="lock-input" placeholder="Password" autofocus>
+            <div class="lock-error" id="login-error"></div>
+            <button onclick="unlock()" class="btn btn-primary btn-block">Unlock</button>
+            <a href="#" onclick="showForgotPassword()" class="lock-link">Forgot Password?</a>
+        </div>
+
+        <div class="lock-card" id="setup-state" style="display:none;">
+            <div class="lock-header">
+                <span class="material-symbols-outlined lock-icon">setup</span>
+                <h2>Set Up Lock Screen</h2>
+            </div>
+            <p class="lock-subtitle">Verify your email to set a password</p>
+            <div id="setup-email-section">
+                <input type="text" class="lock-input" value="madhuryaraghavan@gmail.com" disabled>
+                <button onclick="sendOTP('setup')" class="btn btn-primary btn-block btn-send">Send OTP</button>
+            </div>
+            <div id="setup-otp-section" style="display:none;">
+                <input type="text" id="setup-otp" class="lock-input" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
+                <div class="lock-error" id="setup-otp-error"></div>
+                <button onclick="verifyOTP('setup')" class="btn btn-primary btn-block btn-verify">Verify</button>
+                <button id="setup-resend" onclick="resendOTP('setup')" class="btn btn-secondary btn-block" disabled>Resend in 30s</button>
+            </div>
+            <div id="setup-password-section" style="display:none;">
+                <input type="password" id="setup-password" class="lock-input" placeholder="Create password">
+                <input type="password" id="setup-confirm" class="lock-input" placeholder="Confirm password">
+                <div class="lock-error" id="setup-password-error"></div>
+                <button onclick="savePassword()" class="btn btn-primary btn-block">Set Password</button>
+            </div>
+        </div>
+
+        <div class="lock-card" id="forgot-state" style="display:none;">
+            <div class="lock-header">
+                <span class="material-symbols-outlined lock-icon">lock_reset</span>
+                <h2>Reset Password</h2>
+            </div>
+            <p class="lock-subtitle">Verify your email to reset password</p>
+            <div id="forgot-email-section">
+                <input type="text" class="lock-input" value="madhuryaraghavan@gmail.com" disabled>
+                <button onclick="sendOTP('forgot')" class="btn btn-primary btn-block btn-send">Send OTP</button>
+            </div>
+            <div id="forgot-otp-section" style="display:none;">
+                <input type="text" id="forgot-otp" class="lock-input" placeholder="Enter 6-digit OTP" maxlength="6" inputmode="numeric">
+                <div class="lock-error" id="forgot-otp-error"></div>
+                <button onclick="verifyOTP('forgot')" class="btn btn-primary btn-block btn-verify">Verify</button>
+                <button id="forgot-resend" onclick="resendOTP('forgot')" class="btn btn-secondary btn-block" disabled>Resend in 30s</button>
+            </div>
+            <div id="forgot-password-section" style="display:none;">
+                <input type="password" id="forgot-password" class="lock-input" placeholder="New password">
+                <input type="password" id="forgot-confirm" class="lock-input" placeholder="Confirm password">
+                <div class="lock-error" id="forgot-password-error"></div>
+                <button onclick="saveNewPassword()" class="btn btn-primary btn-block">Reset Password</button>
+            </div>
+            <a href="#" onclick="showLockState('lock-state')" class="lock-link" style="margin-top:12px;">Back to Login</a>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/lock-screen.js') }}"></script>
+{% endif %}
+</body>
+</html>

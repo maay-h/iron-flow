@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block page_title %}Admin Panel{% endblock %}
+{% block content %}
+<div class="admin-header">
+    <h2>Master Admin Dashboard</h2>
+    <div class="admin-stats-row">
+        <div class="stat-card">
+            <span class="stat-value">Rs.{{ '%.0f'|format(current_month_sales) }}</span>
+            <span class="stat-label">Current Month Sales</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">{{ total_members }}</span>
+            <span class="stat-label">Total Members</span>
+        </div>
+    </div>
+</div>
+<div class="toolbar">
+    <form method="GET" class="year-form">
+        <button type="button" onclick="window.location.href='?year={{ year - 1 }}'" class="btn btn-sm">&lt; Prev</button>
+        <span class="year-display">{{ year }}</span>
+        <button type="button" onclick="window.location.href='?year={{ year + 1 }}'" class="btn btn-sm">Next &gt;</button>
+    </form>
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Month</th><th>New Members</th><th>Revenue</th><th>% of Year</th></tr>
+        </thead>
+        <tbody>
+            {% for row in monthly_data %}
+            <tr>
+                <td>{{ row.month }}</td>
+                <td>{{ row.new_members }}</td>
+                <td>Rs.{{ '%.0f'|format(row.revenue) }}</td>
+                <td>{{ row.pct }}%</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="empty-state">No data for {{ year }}</td></tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr class="total-row">
+                <td><strong>Total</strong></td>
+                <td></td>
+                <td><strong>Rs.{{ '%.0f'|format(total_revenue) }}</strong></td>
+                <td><strong>100%</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+<div class="admin-actions">
+    <a href="{{ url_for('sales_detail') }}?month={{ now.strftime('%Y-%m') }}" class="btn btn-primary">
+        <span class="material-symbols-outlined">receipt_long</span> View Sales Detail
+    </a>
+    <a href="{{ url_for('download_annual_report') }}?year={{ year }}" class="btn btn-success">
+        <span class="material-symbols-outlined">download</span> Download Annual Report PDF
+    </a>
+    <a href="{{ url_for('download_members_pdf') }}" class="btn btn-info">
+        <span class="material-symbols-outlined">download</span> Download Members PDF
+    </a>
+</div>
+{% endblock %}

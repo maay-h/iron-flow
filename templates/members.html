@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block page_title %}{{ category_labels.get(category, category) }} - Members{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <a href="{{ url_for('add_member', category=category) }}" class="btn btn-primary">
+        <span class="material-symbols-outlined">person_add</span> Add Member
+    </a>
+    <form method="GET" class="search-form">
+        <input type="text" name="search" placeholder="Search by name, phone, or bill..." value="{{ search }}" class="search-input">
+        <button type="submit" class="btn btn-search"><span class="material-symbols-outlined">search</span></button>
+    </form>
+</div>
+{% set wa = request.args.get('wa') %}
+{% if wa and wa != '#' %}
+<script>window.open('{{ wa }}', '_blank');</script>
+{% endif %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Plan</th>
+                <th>Sessions</th>
+                <th>Expiry</th>
+                <th>Status</th>
+                <th>Balance</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for m in members %}
+            <tr>
+                <td>{{ m.id }}</td>
+                <td><a href="{{ url_for('member_detail', member_id=m.id) }}">{{ m.name }}</a></td>
+                <td>{{ m.phone }}</td>
+                <td>{{ m.plan_name }}</td>
+                <td>{{ m.sessions_used }}/{{ m.total_sessions }}</td>
+                <td>{{ m.expiry_date | datefmt }}</td>
+                <td><span class="status-badge status-{{ m.status }}">{{ m.status }}</span></td>
+                <td>{% if m.balance_amount and m.balance_amount > 0 %}Rs.{{ '%.0f'|format(m.balance_amount) }}{% else %}-{% endif %}</td>
+                <td class="actions-cell">
+                    <a href="{{ url_for('member_detail', member_id=m.id) }}" class="btn btn-sm" title="View">View</a>
+                    <a href="{{ url_for('mark_attendance', member_id=m.id) }}" class="btn btn-sm btn-success" title="Mark Attendance">Attend</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9" class="empty-state">No members found</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block page_title %}Iron&Flow{% endblock %}
+{% block content %}
+{% if today_enquiries and today_enquiries > 0 %}
+<div class="alert alert-danger" style="background:#fff0f0;color:#d00;border:1px solid #d00;border-radius:10px;padding:12px 16px;margin-bottom:16px;font-weight:600;">
+    <span class="material-symbols-outlined" style="vertical-align:middle;margin-right:8px;">notifications</span>
+    {{ today_enquiries }} enquiry{% if today_enquiries > 1 %}ies{% else %}y{% endif %} to follow up today!
+    <a href="{{ url_for('today_enquiries') }}" style="color:#d00;text-decoration:underline;margin-left:12px;">View</a>
+</div>
+{% endif %}
+<div class="plans-grid">
+    <a href="{{ url_for('category_dashboard', category='transformation') }}" class="plan-card plan-transformation">
+        <div class="plan-card-content">
+            <span class="material-symbols-outlined plan-icon">fitness_center</span>
+            <h2>90 Days Transformation</h2>
+            <div class="plan-stats">
+                <div class="stat-badge">
+                    <span class="stat-number">{{ stats.transformation.total }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-badge active">
+                    <span class="stat-number">{{ stats.transformation.active }}</span>
+                    <span class="stat-label">Active</span>
+                </div>
+            </div>
+        </div>
+        <span class="plan-arrow material-symbols-outlined">arrow_forward</span>
+    </a>
+    <a href="{{ url_for('category_dashboard', category='pilates') }}" class="plan-card plan-pilates">
+        <div class="plan-card-content">
+            <span class="material-symbols-outlined plan-icon">self_improvement</span>
+            <h2>Pilates</h2>
+            <div class="plan-stats">
+                <div class="stat-badge">
+                    <span class="stat-number">{{ stats.pilates.total }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-badge active">
+                    <span class="stat-number">{{ stats.pilates.active }}</span>
+                    <span class="stat-label">Active</span>
+                </div>
+            </div>
+        </div>
+        <span class="plan-arrow material-symbols-outlined">arrow_forward</span>
+    </a>
+    <a href="{{ url_for('category_dashboard', category='club') }}" class="plan-card plan-club">
+        <div class="plan-card-content">
+            <span class="material-symbols-outlined plan-icon">stars</span>
+            <h2>Club Package</h2>
+            <div class="plan-stats">
+                <div class="stat-badge">
+                    <span class="stat-number">{{ stats.club.total }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-badge active">
+                    <span class="stat-number">{{ stats.club.active }}</span>
+                    <span class="stat-label">Active</span>
+                </div>
+            </div>
+        </div>
+        <span class="plan-arrow material-symbols-outlined">arrow_forward</span>
+    </a>
+    <a href="{{ url_for('category_dashboard', category='monthly') }}" class="plan-card plan-monthly">
+        <div class="plan-card-content">
+            <span class="material-symbols-outlined plan-icon">calendar_month</span>
+            <h2>1 Month Plan</h2>
+            <div class="plan-stats">
+                <div class="stat-badge">
+                    <span class="stat-number">{{ stats.monthly.total }}</span>
+                    <span class="stat-label">Total</span>
+                </div>
+                <div class="stat-badge active">
+                    <span class="stat-number">{{ stats.monthly.active }}</span>
+                    <span class="stat-label">Active</span>
+                </div>
+            </div>
+        </div>
+        <span class="plan-arrow material-symbols-outlined">arrow_forward</span>
+    </a>
+</div>
+
+{% endblock %}

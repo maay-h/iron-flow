@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block page_title %}Setup{% endblock %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <h2>Initial Setup</h2>
+        <p>Set the master admin password to get started.</p>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="password">Master Admin Password</label>
+                <input type="password" name="password" id="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Set Password</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

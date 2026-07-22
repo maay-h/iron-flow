@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block page_title %}Admin Login{% endblock %}
+{% block content %}
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-icon">
+            <span class="material-symbols-outlined" style="font-size:48px;">admin_panel_settings</span>
+        </div>
+        <h2>Iron&Flow Admin</h2>
+        <form method="POST" class="form">
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" class="form-control" required placeholder="Enter admin password" autofocus>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
+        </form>
+        <p class="text-muted text-center mt-2">Enter master or category admin password</p>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% block page_title %}{{ member.name }}{% endblock %}
+{% block content %}
+<div class="member-header">
+    <div class="member-info">
+        <h2>{{ member.name }}</h2>
+        <p class="member-meta">
+            <span class="status-badge status-{{ member.status }}">{{ member.status }}</span>
+            <span>{{ member.plan_name }}</span>
+            <span>{{ member.phone }}</span>
+            <span>{{ member.email }}</span>
+        </p>
+    </div>
+    <div class="member-actions">
+        <a href="{{ url_for('edit_member', member_id=member.id) }}" class="btn btn-primary">
+            <span class="material-symbols-outlined">edit</span> Edit
+        </a>
+        <a href="{{ url_for('mark_attendance', member_id=member.id) }}" class="btn btn-success">
+            <span class="material-symbols-outlined">check_circle</span> Mark Attendance
+        </a>
+        <a href="{{ url_for('renew_member', member_id=member.id) }}" class="btn btn-warning">
+            <span class="material-symbols-outlined">refresh</span> Renew
+        </a>
+        {% if member.balance_amount and member.balance_amount > 0 %}
+        <a href="{{ url_for('pay_balance', member_id=member.id) }}" class="btn btn-info">
+            <span class="material-symbols-outlined">payments</span> Pay Balance
+        </a>
+        {% endif %}
+        <form method="POST" action="{{ url_for('delete_member', member_id=member.id) }}" style="display:inline" onsubmit="return confirm('Delete this member?')">
+            <button type="submit" class="btn btn-danger">
+                <span class="material-symbols-outlined">delete</span> Delete
+            </button>
+        </form>
+    </div>
+</div>
+<div class="detail-grid">
+    <div class="detail-card">
+        <h3>Session Progress</h3>
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" style="width: {{ (member.sessions_used / member.total_sessions * 100)|round if member.total_sessions else 0 }}%"></div>
+            </div>
+            <p class="progress-text">Sessions: {{ member.sessions_used }} / {{ member.total_sessions }}</p>
+            <p class="progress-remaining">{{ remaining }} remaining</p>
+        </div>
+    </div>
+    <div class="detail-card">
+        <h3>Subscription Info</h3>
+        <table class="info-table">
+            <tr><td>Joining Date</td><td>{{ member.joining_date | datefmt }}</td></tr>
+            <tr><td>Expiry Date</td><td>{{ member.expiry_date | datefmt }}</td></tr>
+            <tr><td>Price</td><td>Rs.{{ '%.0f'|format(member.price) if member.price else '-' }}</td></tr>
+            <tr><td>Amount Paid</td><td>Rs.{{ '%.0f'|format(member.amount_paid) if member.amount_paid else '-' }}</td></tr>
+            <tr><td>Balance</td><td>{% if member.balance_amount and member.balance_amount > 0 %}Rs.{{ '%.0f'|format(member.balance_amount) }}{% else %}Clear{% endif %}</td></tr>
+            <tr><td>Bill #</td><td>{{ member.bill_number or '-' }}</td></tr>
+            <tr><td>Trainer</td><td>{{ member.trainer or '-' }}</td></tr>
+        </table>
+    </div>
+</div>
+<div class="whatsapp-section">
+    <h3>WhatsApp Messages</h3>
+    <div class="whatsapp-buttons">
+        <a href="{{ whatsapp_url(member.phone, welcome_msg) }}" target="_blank" class="btn btn-whatsapp">
+            <span class="material-symbols-outlined">chat</span> Send Welcome
+        </a>
+        <a href="{{ whatsapp_url(member.phone, reminder_msg) }}" target="_blank" class="btn btn-whatsapp">
+            <span class="material-symbols-outlined">chat</span> Send Reminder
+        </a>
+        {% if member.balance_amount and member.balance_amount > 0 %}
+        <a href="{{ whatsapp_url(member.phone, balance_msg) }}" target="_blank" class="btn btn-whatsapp">
+            <span class="material-symbols-outlined">chat</span> Balance Reminder
+        </a>
+        {% endif %}
+    </div>
+</div>
+<div class="detail-card">
+    <h3>Payment History</h3>
+    <div class="table-container">
+        <table class="data-table">
+            <thead><tr><th>Date</th><th>Amount</th><th>Mode</th><th>Notes</th></tr></thead>
+            <tbody>
+                {% for p in payments %}
+                <tr>
+                    <td>{{ p.payment_date | datefmt }}</td>
+                    <td>Rs.{{ '%.0f'|format(p.amount) }}</td>
+                    <td>{{ p.payment_mode }}</td>
+                    <td>{{ p.notes or '' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">No payments recorded</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="detail-card">
+    <h3>Membership History</h3>
+    <div class="table-container">
+        <table class="data-table">
+            <thead><tr><th>Plan</th><th>Start</th><th>Expiry</th><th>Sessions</th><th>Paid</th><th>Balance</th></tr></thead>
+            <tbody>
+                {% for h in history %}
+                <tr>
+                    <td>{{ h.plan_name }}</td>
+                    <td>{{ h.start_date | datefmt }}</td>
+                    <td>{{ h.expiry_date | datefmt }}</td>
+                    <td>{{ h.sessions_used }}/{{ h.total_sessions }}</td>
+                    <td>Rs.{{ '%.0f'|format(h.amount_paid) }}</td>
+                    <td>{% if h.balance_amount and h.balance_amount > 0 %}Rs.{{ '%.0f'|format(h.balance_amount) }}{% else %}-{% endif %}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="6">No history</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block page_title %}Sales Detail - {{ month }}{% endblock %}
+{% block content %}
+<div class="toolbar">
+    <form method="GET" class="month-form">
+        <input type="month" name="month" value="{{ month }}" class="form-control" onchange="this.form.submit()">
+    </form>
+    {% if is_category %}
+    <a href="{{ url_for('category_admin', category=category) }}" class="btn btn-secondary">Back to Admin</a>
+    {% else %}
+    <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">Back to Admin</a>
+    {% endif %}
+</div>
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Member</th>
+                <th>Phone</th>
+                <th>Category</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Date</th>
+                <th>Mode</th>
+                <th>Notes</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in payments %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.member_name or 'N/A' }}</td>
+                <td>{{ p.member_phone or '-' }}</td>
+                <td>{{ p.category or '-' }}</td>
+                <td>{{ p.plan_name or '-' }}</td>
+                <td>Rs.{{ '%.0f'|format(p.amount) }}</td>
+                <td>{{ p.payment_date | datefmt }}</td>
+                <td>{{ p.payment_mode }}</td>
+                <td>{{ p.notes or '' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="9" class="empty-state">No payments for {{ month }}</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

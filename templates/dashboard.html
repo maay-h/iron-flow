@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block page_title %}{{ category_labels.get(category, category) }} Dashboard{% endblock %}
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <span class="material-symbols-outlined stat-icon">people</span>
+        <div class="stat-info">
+            <span class="stat-value">{{ stats.total }}</span>
+            <span class="stat-label">Total Members</span>
+        </div>
+    </div>
+    <div class="stat-card stat-active">
+        <span class="material-symbols-outlined stat-icon">check_circle</span>
+        <div class="stat-info">
+            <span class="stat-value">{{ stats.active }}</span>
+            <span class="stat-label">Active</span>
+        </div>
+    </div>
+    <div class="stat-card stat-expired">
+        <span class="material-symbols-outlined stat-icon">cancel</span>
+        <div class="stat-info">
+            <span class="stat-value">{{ stats.expired }}</span>
+            <span class="stat-label">Expired</span>
+        </div>
+    </div>
+    <div class="stat-card stat-expiring">
+        <span class="material-symbols-outlined stat-icon">hourglass_top</span>
+        <div class="stat-info">
+            <span class="stat-value">{{ stats.expiring }}</span>
+            <span class="stat-label">Expiring Soon</span>
+        </div>
+    </div>
+</div>
+<div class="quick-actions">
+    <a href="{{ url_for('add_member', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">person_add</span>
+        <span>Add Member</span>
+    </a>
+    <a href="{{ url_for('members_list', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">group</span>
+        <span>All Members</span>
+    </a>
+    <a href="{{ url_for('expiring_members', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">hourglass_top</span>
+        <span>Expiring Soon</span>
+    </a>
+    <a href="{{ url_for('expired_members', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">timer_off</span>
+        <span>Expired</span>
+    </a>
+    <a href="{{ url_for('pending_balances', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">account_balance</span>
+        <span>Balances</span>
+    </a>
+    <a href="{{ url_for('category_admin', category=category) }}" class="action-card">
+        <span class="material-symbols-outlined">admin_panel_settings</span>
+        <span>Admin</span>
+    </a>
+</div>
+{% endblock %}

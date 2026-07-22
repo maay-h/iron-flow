@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block page_title %}Today's Enquiries{% endblock %}
+{% block content %}
+
+{% if today_list and today_list|length > 0 %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Plan</th>
+                <th>Note</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for e in today_list %}
+            <tr>
+                <td>{{ e.name }}</td>
+                <td>{{ e.phone }}</td>
+                <td>{{ e.plan }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('enquiry_update_note', enquiry_id=e.id) }}" style="display:inline-flex;align-items:center;gap:4px;">
+                        <input type="text" name="note" value="{{ e.note or '' }}" class="form-input" style="width:120px;padding:4px 6px;font-size:0.75rem;" placeholder="Note">
+                        <button type="submit" class="btn btn-sm" title="Save note"><span class="material-symbols-outlined" style="font-size:16px;">check</span></button>
+                    </form>
+                </td>
+                <td class="actions-cell">
+                    {% if e.phone %}<a href="tel:{{ e.phone }}" class="btn btn-sm" title="Call"><span class="material-symbols-outlined">call</span></a>{% endif %}
+                    {% set np = e.phone | normalize_phone %}
+                    {% if np %}
+                    <a href="https://wa.me/{{ np }}?text={{ ('Hi ' + e.name + ', you recently enquired about ' + e.plan + '. Would you like to proceed?') | urlencode }}" target="_blank" class="btn btn-sm" title="WhatsApp"><span class="material-symbols-outlined">chat</span></a>
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('enquiry_update_date', enquiry_id=e.id) }}" style="display:inline-flex;align-items:center;gap:4px;">
+                        <input type="date" name="follow_up_date" value="{{ e.follow_up_date }}" class="form-input" style="width:140px;padding:4px 8px;font-size:0.8rem;" required>
+                        <button type="submit" class="btn btn-sm btn-primary">Extend</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('enquiry_mark_done', enquiry_id=e.id) }}" style="display:inline">
+                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Mark this enquiry as done?')">Done</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="empty-state">No enquiries to follow up today</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block page_title %}{{ category_labels.get(category, category) }} - Pending Balances{% endblock %}
+{% block content %}
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr><th>Name</th><th>Phone</th><th>Plan</th><th>Balance</th><th>Due Date</th><th>Actions</th></tr>
+        </thead>
+        <tbody>
+            {% for m in balances %}
+            <tr>
+                <td><a href="{{ url_for('member_detail', member_id=m.id) }}">{{ m.name }}</a></td>
+                <td>{{ m.phone }}</td>
+                <td>{{ m.plan_name }}</td>
+                <td class="text-danger">Rs.{{ '%.0f'|format(m.balance_amount) }}</td>
+                <td>{{ m.balance_due_date | datefmt }}</td>
+                <td>
+                    <a href="{{ url_for('pay_balance', member_id=m.id) }}" class="btn btn-sm btn-primary">Pay</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="empty-state">No pending balances</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
