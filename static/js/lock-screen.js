@@ -46,30 +46,6 @@ function unlock() {
   });
 }
 
-function saveNewPassword() {
-  var pwd = document.getElementById('forgot-password').value;
-  var confirm = document.getElementById('forgot-confirm').value;
-  var err = document.getElementById('forgot-password-error');
-  if (pwd.length < 4) { err.textContent = 'Password must be at least 4 characters'; return; }
-  if (pwd !== confirm) { err.textContent = 'Passwords do not match'; return; }
-  err.textContent = '';
-
-  fetch('/api/reset-password', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ password: pwd })
-  })
-  .then(function(r) { return r.json(); })
-  .then(function(d) {
-    if (d.success) {
-      showLockState('lock-state');
-      document.getElementById('login-error').textContent = 'Password reset successfully';
-    } else err.textContent = d.error || 'Failed to reset password';
-  });
-}
-
-function showForgotPassword() { showLockState('forgot-state'); }
-
 function logout() {
   fetch('/api/logout', { method: 'POST' }).then(function() { window.location.reload(); });
 }
@@ -92,11 +68,5 @@ document.addEventListener('DOMContentLoaded', function() {
   });
   document.getElementById('setup-confirm')?.addEventListener('keydown', function(e) {
     if (e.key === 'Enter') savePassword();
-  });
-  document.getElementById('forgot-password')?.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') saveNewPassword();
-  });
-  document.getElementById('forgot-confirm')?.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter') saveNewPassword();
   });
 });

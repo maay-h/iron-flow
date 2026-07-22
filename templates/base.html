@@ -132,7 +132,6 @@
             <input type="password" id="login-password" class="lock-input" placeholder="Password" autofocus>
             <div class="lock-error" id="login-error"></div>
             <button onclick="unlock()" class="btn btn-primary btn-block">Unlock</button>
-            <a href="#" onclick="showForgotPassword()" class="lock-link">Forgot Password?</a>
         </div>
 
         <div class="lock-card" id="setup-state" style="display:none;">
@@ -147,18 +146,7 @@
             <button onclick="savePassword()" class="btn btn-primary btn-block">Set Password</button>
         </div>
 
-        <div class="lock-card" id="forgot-state" style="display:none;">
-            <div class="lock-header">
-                <span class="material-symbols-outlined lock-icon">lock_reset</span>
-                <h2>Reset Password</h2>
-            </div>
-            <p class="lock-subtitle">Create a new password</p>
-            <input type="password" id="forgot-password" class="lock-input" placeholder="New password">
-            <input type="password" id="forgot-confirm" class="lock-input" placeholder="Confirm password">
-            <div class="lock-error" id="forgot-password-error"></div>
-            <button onclick="saveNewPassword()" class="btn btn-primary btn-block">Reset Password</button>
-            <a href="#" onclick="showLockState('lock-state')" class="lock-link" style="margin-top:12px;">Back to Login</a>
-        </div>
+
     </div>
     <script src="{{ url_for('static', filename='js/lock-screen.js') }}"></script>
 {% endif %}
