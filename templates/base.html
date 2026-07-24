@@ -119,7 +119,19 @@
         </main>
     </div>
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script>function logout(){fetch('/api/logout',{method:'POST'}).then(function(){window.location.reload()})}</script>
+    <script>
+    function logout(){fetch('/api/logout',{method:'POST'}).then(function(){window.location.reload()})}
+    function showToast(msg) {
+        var t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#e63946;color:#fff;padding:12px 24px;border-radius:8px;font-size:0.9rem;z-index:99999;box-shadow:0 4px 12px rgba(0,0,0,0.3);font-family:var(--font-sans);';
+        document.body.appendChild(t);
+        setTimeout(function(){ t.remove(); }, 7000);
+    }
+    function waClick(phone, e) {
+        if (!phone) { e.preventDefault(); showToast('No phone number added for this member'); return false; }
+    }
+    </script>
     {% block scripts %}{% endblock %}
 {% else %}
     <div class="lockscreen" id="lockscreen">

@@ -27,11 +27,8 @@
                     </form>
                 </td>
                 <td class="actions-cell">
-                    {% if e.phone %}<a href="tel:{{ e.phone }}" class="btn btn-sm" title="Call"><span class="material-symbols-outlined">call</span></a>{% endif %}
-                    {% set np = e.phone | normalize_phone %}
-                    {% if np %}
-                    <a href="https://wa.me/{{ np }}?text={{ ('Hi ' + e.name + ', you recently enquired about ' + e.plan + '. Would you like to proceed?') | urlencode }}" target="_blank" class="btn btn-sm" title="WhatsApp"><span class="material-symbols-outlined">chat</span></a>
-                    {% endif %}
+                    {% if e.phone %}<a href="tel:{{ e.phone }}" class="btn btn-sm" title="Call"><span class="material-symbols-outlined">call</span></a>
+                    <a href="https://wa.me/{{ e.phone|normalize_phone }}?text={{ ('Hi ' + e.name + ', you recently enquired about ' + (e.plan or '') + '. Would you like to proceed?') | urlencode }}" target="_blank" class="btn btn-sm" title="WhatsApp" onclick="waClick('{{ e.phone }}', event)"><span class="material-symbols-outlined">chat</span></a>{% endif %}
                     <form method="POST" action="{{ url_for('enquiry_update_date', enquiry_id=e.id) }}" style="display:inline-flex;align-items:center;gap:4px;">
                         <input type="date" name="follow_up_date" value="{{ e.follow_up_date }}" class="form-input" style="width:140px;padding:4px 8px;font-size:0.8rem;" required>
                         <button type="submit" class="btn btn-sm btn-primary">Extend</button>

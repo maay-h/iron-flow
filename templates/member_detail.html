@@ -60,14 +60,14 @@
 <div class="whatsapp-section">
     <h3>WhatsApp Messages</h3>
     <div class="whatsapp-buttons">
-        <a href="{{ whatsapp_url(member.phone, welcome_msg) }}" target="_blank" class="btn btn-whatsapp">
+        <a href="{{ whatsapp_url(member.phone, welcome_msg) }}" target="_blank" class="btn btn-whatsapp" onclick="waClick('{{ member.phone }}', event)">
             <span class="material-symbols-outlined">chat</span> Send Welcome
         </a>
-        <a href="{{ whatsapp_url(member.phone, reminder_msg) }}" target="_blank" class="btn btn-whatsapp">
+        <a href="{{ whatsapp_url(member.phone, reminder_msg) }}" target="_blank" class="btn btn-whatsapp" onclick="waClick('{{ member.phone }}', event)">
             <span class="material-symbols-outlined">chat</span> Send Reminder
         </a>
         {% if member.balance_amount and member.balance_amount > 0 %}
-        <a href="{{ whatsapp_url(member.phone, balance_msg) }}" target="_blank" class="btn btn-whatsapp">
+        <a href="{{ whatsapp_url(member.phone, balance_msg) }}" target="_blank" class="btn btn-whatsapp" onclick="waClick('{{ member.phone }}', event)">
             <span class="material-symbols-outlined">chat</span> Balance Reminder
         </a>
         {% endif %}
@@ -105,7 +105,7 @@
                     <td>{{ h.start_date | datefmt }}</td>
                     <td>{{ h.expiry_date | datefmt }}</td>
                     <td>{{ h.sessions_used }}/{{ h.total_sessions }}</td>
-                    <td>Rs.{{ '%.0f'|format(h.amount_paid) }}</td>
+                    <td>{% if h.amount_paid %}Rs.{{ '%.0f'|format(h.amount_paid) }}{% else %}-{% endif %}</td>
                     <td>{% if h.balance_amount and h.balance_amount > 0 %}Rs.{{ '%.0f'|format(h.balance_amount) }}{% else %}-{% endif %}</td>
                 </tr>
                 {% else %}

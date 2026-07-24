@@ -268,6 +268,8 @@ def get_welcome_message(category, plan_name=None):
         return f"Welcome to Iron&Flow! You have enrolled in our Pilates {pn}. Get ready to strengthen and tone!"
     elif category == "club":
         return "Welcome to Iron&Flow! You have enrolled in our Club Package. Enjoy premium access to all facilities!"
+    elif category == "monthly":
+        return "Welcome to Iron&Flow! You have enrolled in our 1 Month Plan. Stay consistent, show up, and let's build momentum together!"
     return "Welcome to Iron&Flow!"
 
 
