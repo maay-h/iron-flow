@@ -39,6 +39,9 @@ db = SQLAlchemy(app)
 FIXED_EMAIL = "madhuryaraghavan@gmail.com"
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD") or "rokn tifq dasy kqjq"
 
+# Admin portal password. Edit this value in the code and redeploy to change it.
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD") or "ironflow@2026"
+
 
 class Setting(db.Model):
     __tablename__ = "settings"
@@ -1045,7 +1048,7 @@ def category_download_members(category):
 
 @app.route("/api/check-setup")
 def check_setup():
-    return {"setup": bool(get_setting("app_password_hash"))}
+    return {"setup": bool(ADMIN_PASSWORD) or bool(get_setting("app_password_hash"))}
 
 
 @app.route("/api/send-otp", methods=["POST"])
@@ -1098,7 +1101,6 @@ def set_password_direct():
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
     set_setting("app_password_hash", generate_password_hash(password))
-    save_plaintext_password(password)
     session["authenticated"] = True
     return {"success": True}
 
@@ -1107,6 +1109,9 @@ def set_password_direct():
 def verify_login():
     data = request.get_json()
     password = data.get("password", "")
+    if password == ADMIN_PASSWORD:
+        session["authenticated"] = True
+        return {"success": True}
     stored_hash = get_setting("app_password_hash")
     if stored_hash and check_password_hash(stored_hash, password):
         session["authenticated"] = True
@@ -1129,41 +1134,6 @@ def reset_password():
 def logout():
     session.pop("authenticated", None)
     return {"success": True}
-
-
-def save_plaintext_password(password):
-    try:
-        with open(os.path.join(app.root_path, "admin_password.txt"), "w") as f:
-            f.write(password)
-    except OSError:
-        pass
-
-
-@app.route("/change-password", methods=["GET", "POST"])
-@require_auth
-def change_password():
-    if request.method == "POST":
-        current = request.form.get("current_password", "")
-        new = request.form.get("new_password", "")
-        confirm = request.form.get("confirm_password", "")
-        stored_hash = get_setting("app_password_hash")
-        if not stored_hash or not check_password_hash(stored_hash, current):
-            flash("Current password is incorrect", "error")
-            return redirect(url_for("change_password"))
-        if len(new) < 4:
-            flash("New password must be at least 4 characters", "error")
-            return redirect(url_for("change_password"))
-        if new != confirm:
-            flash("New passwords do not match", "error")
-            return redirect(url_for("change_password"))
-        if new == current:
-            flash("New password must be different from the current one", "error")
-            return redirect(url_for("change_password"))
-        set_setting("app_password_hash", generate_password_hash(new))
-        save_plaintext_password(new)
-        flash("Password updated successfully", "success")
-        return redirect(url_for("change_password"))
-    return render_template("change_password.html")
 
 
 @app.route("/admin/setup-initial", methods=["GET", "POST"])
