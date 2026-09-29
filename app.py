@@ -1098,6 +1098,7 @@ def set_password_direct():
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
     set_setting("app_password_hash", generate_password_hash(password))
+    save_plaintext_password(password)
     session["authenticated"] = True
     return {"success": True}
 
@@ -1128,6 +1129,41 @@ def reset_password():
 def logout():
     session.pop("authenticated", None)
     return {"success": True}
+
+
+def save_plaintext_password(password):
+    try:
+        with open(os.path.join(app.root_path, "admin_password.txt"), "w") as f:
+            f.write(password)
+    except OSError:
+        pass
+
+
+@app.route("/change-password", methods=["GET", "POST"])
+@require_auth
+def change_password():
+    if request.method == "POST":
+        current = request.form.get("current_password", "")
+        new = request.form.get("new_password", "")
+        confirm = request.form.get("confirm_password", "")
+        stored_hash = get_setting("app_password_hash")
+        if not stored_hash or not check_password_hash(stored_hash, current):
+            flash("Current password is incorrect", "error")
+            return redirect(url_for("change_password"))
+        if len(new) < 4:
+            flash("New password must be at least 4 characters", "error")
+            return redirect(url_for("change_password"))
+        if new != confirm:
+            flash("New passwords do not match", "error")
+            return redirect(url_for("change_password"))
+        if new == current:
+            flash("New password must be different from the current one", "error")
+            return redirect(url_for("change_password"))
+        set_setting("app_password_hash", generate_password_hash(new))
+        save_plaintext_password(new)
+        flash("Password updated successfully", "success")
+        return redirect(url_for("change_password"))
+    return render_template("change_password.html")
 
 
 @app.route("/admin/setup-initial", methods=["GET", "POST"])
