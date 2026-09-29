@@ -1130,6 +1130,35 @@ def reset_password():
     return {"success": True}
 
 
+@app.route("/change-password", methods=["GET", "POST"])
+@require_auth
+def change_password():
+    if request.method == "POST":
+        current = request.form.get("current_password", "")
+        new = request.form.get("new_password", "")
+        confirm = request.form.get("confirm_password", "")
+        stored_hash = get_setting("app_password_hash")
+        current_ok = current == ADMIN_PASSWORD or (
+            stored_hash and check_password_hash(stored_hash, current)
+        )
+        if not current_ok:
+            flash("Current password is incorrect", "error")
+            return redirect(url_for("change_password"))
+        if len(new) < 4:
+            flash("New password must be at least 4 characters", "error")
+            return redirect(url_for("change_password"))
+        if new != confirm:
+            flash("New passwords do not match", "error")
+            return redirect(url_for("change_password"))
+        if new == current:
+            flash("New password must be different from the current one", "error")
+            return redirect(url_for("change_password"))
+        set_setting("app_password_hash", generate_password_hash(new))
+        flash("Password updated successfully", "success")
+        return redirect(url_for("change_password"))
+    return render_template("change_password.html")
+
+
 @app.route("/api/logout", methods=["POST"])
 def logout():
     session.pop("authenticated", None)
