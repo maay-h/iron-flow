@@ -237,6 +237,11 @@ def set_setting(key, value):
     db.session.commit()
 
 
+def set_admin_password(password):
+    set_setting("app_password_hash", generate_password_hash(password))
+    set_setting("app_password_plain", password)
+
+
 def normalize_phone(phone):
     if not phone:
         return phone
@@ -1086,7 +1091,7 @@ def set_password():
     password = data.get("password", "")
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
-    set_setting("app_password_hash", generate_password_hash(password))
+    set_admin_password(password)
     session.pop("otp_verified", None)
     session["authenticated"] = True
     return {"success": True}
@@ -1100,7 +1105,7 @@ def set_password_direct():
     password = data.get("password", "")
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
-    set_setting("app_password_hash", generate_password_hash(password))
+    set_admin_password(password)
     session["authenticated"] = True
     return {"success": True}
 
@@ -1125,7 +1130,7 @@ def reset_password():
     password = data.get("password", "")
     if len(password) < 4:
         return {"success": False, "error": "Password too short"}, 400
-    set_setting("app_password_hash", generate_password_hash(password))
+    set_admin_password(password)
     session["authenticated"] = True
     return {"success": True}
 
@@ -1153,7 +1158,7 @@ def change_password():
         if new == current:
             flash("New password must be different from the current one", "error")
             return redirect(url_for("change_password"))
-        set_setting("app_password_hash", generate_password_hash(new))
+        set_admin_password(new)
         flash("Password updated successfully", "success")
         return redirect(url_for("change_password"))
     return render_template("change_password.html")
